@@ -1,6 +1,7 @@
 package edu.ucsb.cs.cs184.oshen.faelsafe
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 import java.io.IOException
 import java.io.UnsupportedEncodingException
@@ -35,7 +36,7 @@ object EncryptorSgltn {
         if (Files.exists(keyfilepath)) { //read from internal storage file to get key
             try {
                 val reader = Files.newBufferedReader(keyfilepath)
-                setKey(Integer.parseInt(reader.readLine()).toString())
+                setKey(reader.readLine())
                 reader.close()
             }
             catch (x : IOException) {
@@ -104,23 +105,25 @@ object EncryptorSgltn {
 
     fun encryptFile(filepath: String): Boolean {
         try {
+            Log.d("DEBUG", filepath)
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             //encode filename
             val split = filepath.split('/')
             val filename = split[split.size - 1]
-            val encname = encrypt(filename)
             //store encoded filepath into path directory
-            val pathfile = File(pathdir.toString(), encname)
+            val pathfile = File(pathdir.toString(), filename)
+            Log.d("DEBUG", pathfile.toString())
             pathfile.createNewFile()
+            Log.d("DEBUG", "Pathfile created")
             Files.write(Paths.get(pathfile.toString()), encrypt(filepath)!!.toByteArray(charset("UTF-8")))
+            Log.d("DEBUG", "Encrypted path stored in pathfile")
             //store encoded file into enc directory
-            val encfile = File(encdir.toString(), encname)
+            val encfile = File(encdir.toString(), filename)
             encfile.createNewFile()
+            Log.d("DEBUG", "Encfile created")
             Files.write(Paths.get(encfile.toString()), Base64.getEncoder().encode(cipher.doFinal(Files.readAllBytes(Paths.get(filepath)))))
-            //remove file
-            val oldfile = File(filepath)
-            oldfile.delete()
+            Log.d("DEBUG", "File encrypted")
 
             return true
         } catch (e: Exception) {
