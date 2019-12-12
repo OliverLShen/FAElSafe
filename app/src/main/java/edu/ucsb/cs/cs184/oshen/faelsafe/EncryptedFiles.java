@@ -168,7 +168,7 @@ public class EncryptedFiles extends AppCompatActivity {
             return;
         }
         if(!flagInitialized){
-            final String dire = getFilesDir().getAbsolutePath();
+            final String dire = getFilesDir().getAbsolutePath() +"/path";
             //final String filePath = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/Camera";
             //final String filePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
 
