@@ -214,7 +214,10 @@ public class EncryptedFiles extends AppCompatActivity {
                             encryptor.init(getApplicationContext());
                             for(int j = 0; j < fileSelected.length; j++){
                                 if (fileSelected[j] == true) {
-                                    boolean encWork = encryptor.decryptFile(files[j].getAbsolutePath());
+                                    //String[] filesplit = files[j].getAbsolutePath().split("/");
+                                    //String filename = filesplit[filesplit.length-1];
+                                    String filename = files[j].getAbsolutePath().substring(files[j].getAbsolutePath().lastIndexOf('/')+1);
+                                    boolean encWork = encryptor.decryptFile(filename);
                                     if(encWork){
                                         Context context = getApplicationContext();
                                         CharSequence text = "File Successfully Decrypted!";
@@ -223,8 +226,8 @@ public class EncryptedFiles extends AppCompatActivity {
                                         Toast toast = Toast.makeText(context, text, duration);
                                         toast.show();
                                         File file = new File(files[j].getAbsolutePath());
-                                        boolean flag = file.delete();
-                                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                                        //boolean flag = file.delete();
+                                        //context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
                                     }
                                     else {
                                         Context context = getApplicationContext();

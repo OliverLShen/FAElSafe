@@ -240,8 +240,8 @@ public class MainActivity2 extends AppCompatActivity {
                                         Toast toast = Toast.makeText(context, text, duration);
                                         toast.show();
                                         File file = new File(files[j].getAbsolutePath());
-                                        boolean flag = file.delete();
-                                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                                        //boolean flag = file.delete();
+                                        //context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
 
                                         //choosePath();
                                         //deletefile(uri,files[j].getAbsolutePath());

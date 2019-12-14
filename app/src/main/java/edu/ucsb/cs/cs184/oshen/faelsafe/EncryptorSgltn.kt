@@ -2,6 +2,7 @@ package edu.ucsb.cs.cs184.oshen.faelsafe
 
 import android.content.Context
 import android.util.Log
+import androidx.documentfile.provider.DocumentFile
 import java.io.File
 import java.io.IOException
 import java.io.UnsupportedEncodingException
@@ -80,7 +81,7 @@ object EncryptorSgltn {
 
     fun encrypt(strToEncrypt: String): String? { //mainly helper for encryptFile
         try {
-            val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             return Base64.getEncoder()
                 .encodeToString(cipher.doFinal(strToEncrypt.toByteArray(charset("UTF-8"))))
@@ -93,7 +94,7 @@ object EncryptorSgltn {
 
     fun decrypt(strToDecrypt: String): String? { //mainly helper for decryptFile
         try {
-            val cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING")
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             cipher.init(Cipher.DECRYPT_MODE, secretKey)
             return String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)))
         } catch (e: Exception) {
@@ -106,7 +107,7 @@ object EncryptorSgltn {
     fun encryptFile(filepath: String): Boolean {
         try {
             Log.d("DEBUG", filepath)
-            val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             //encode filename
             val split = filepath.split('/')
@@ -125,6 +126,9 @@ object EncryptorSgltn {
             Files.write(Paths.get(encfile.toString()), Base64.getEncoder().encode(cipher.doFinal(Files.readAllBytes(Paths.get(filepath)))))
             Log.d("DEBUG", "File encrypted")
 
+            val oldfile = File(filepath)
+            val doc = DocumentFile.fromFile(oldfile)
+            doc.delete()
             return true
         } catch (e: Exception) {
             println("Error while encrypting: $e")
@@ -135,18 +139,22 @@ object EncryptorSgltn {
 
     fun decryptFile(encname: String): Boolean {
         try {
-            val cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING")
+            Log.d("DEBUG", encname)
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
             val pathfile = File(pathdir.toString(), encname)
             val encfile = File(encdir.toString(), encname)
+            Log.d("DEBUG", pathfile.toString() + " " + encfile.toString())
 
             val restoredfile = File(decrypt(String(Files.readAllBytes(Paths.get(pathfile.toString())))))
             restoredfile.createNewFile()
+            Log.d("DEBUG", "This")
             Files.write(Paths.get(restoredfile.toString()), cipher.doFinal(Base64.getDecoder().decode(Files.readAllBytes(Paths.get(encfile.toString())))))
 
             pathfile.delete()
             encfile.delete()
+            return true;
         } catch (e: Exception) {
             println("Error while decrypting: $e")
         }
